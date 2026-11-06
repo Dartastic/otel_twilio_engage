@@ -1,15 +1,16 @@
-// Licensed under the Dartastic Pro Software License Agreement.
+// Licensed under the Apache License, Version 2.0
 // Copyright 2025-2026 Mindful Software LLC d/b/a Dartastic.io, All rights reserved.
 
-import 'package:dartastic_opentelemetry/dartastic_opentelemetry.dart';
+import 'package:dartastic_opentelemetry_api/dartastic_opentelemetry_api.dart';
 
 import 'otel_twilio_engage_suppression.dart';
 
 const _tracerName = 'dartastic_otel_libs_twilio_engage';
 
-Tracer _tracer() => OTel.tracerProvider().getTracer(_tracerName);
+APITracer _tracer() => OTelAPI.tracerProvider().getTracer(_tracerName);
 
 class TwilioEngageResult {
+  /// Creates a result.
   const TwilioEngageResult({
     this.workspaceSlug,
     this.spaceId,
@@ -75,8 +76,13 @@ class TwilioEngageResult {
   final int? statusCode;
 }
 
+/// What a traced call returned: the value for the caller plus fields
+/// recorded on the span.
 class TwilioEngageCallResult<T> {
+  /// Creates a call result.
   const TwilioEngageCallResult({required this.value, this.result});
+
+  /// The value returned to the caller.
   final T value;
   final TwilioEngageResult? result;
 }
@@ -104,104 +110,104 @@ Future<T> tracedTwilioEngage<T>({
   final span = _tracer().startSpan(
     'twilio_engage $operation',
     kind: SpanKind.client,
-    attributes: OTel.attributesFromMap(m),
+    attributes: OTelAPI.attributesFromMap(m),
   );
   try {
     final r = await invoke();
     if (r.result != null) {
       final extras = <Attribute<Object>>[];
       if (r.result!.workspaceSlug != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'twilio_engage.workspace.slug',
           r.result!.workspaceSlug!,
         ));
       }
       if (r.result!.spaceId != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'twilio_engage.space.id',
           r.result!.spaceId!,
         ));
       }
       if (r.result!.profileId != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'twilio_engage.profile.id',
           r.result!.profileId!,
         ));
       }
       if (r.result!.audienceId != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'twilio_engage.audience.id',
           r.result!.audienceId!,
         ));
       }
       if (r.result!.audienceKey != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'twilio_engage.audience.key',
           r.result!.audienceKey!,
         ));
       }
       if (r.result!.audienceType != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'twilio_engage.audience.type',
           r.result!.audienceType!,
         ));
       }
       if (r.result!.computationKey != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'twilio_engage.computation.key',
           r.result!.computationKey!,
         ));
       }
       if (r.result!.computationClass != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'twilio_engage.computation.class',
           r.result!.computationClass!,
         ));
       }
       if (r.result!.journeyId != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'twilio_engage.journey.id',
           r.result!.journeyId!,
         ));
       }
       if (r.result!.entityKind != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'twilio_engage.entity.kind',
           r.result!.entityKind!,
         ));
       }
       if (r.result!.profileSize != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'twilio_engage.profile.size',
           r.result!.profileSize!,
         ));
       }
       if (r.result!.audienceSize != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'twilio_engage.audience.size',
           r.result!.audienceSize!,
         ));
       }
       if (r.result!.eventsIngested != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'twilio_engage.events.ingested',
           r.result!.eventsIngested!,
         ));
       }
       if (r.result!.computeDurationMs != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'twilio_engage.compute.duration_ms',
           r.result!.computeDurationMs!,
         ));
       }
       if (r.result!.mtus != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'twilio_engage.mtus',
           r.result!.mtus!,
         ));
       }
       if (r.result!.statusCode != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'http.response.status_code',
           r.result!.statusCode!,
         ));
@@ -212,13 +218,13 @@ Future<T> tracedTwilioEngage<T>({
           );
         }
       }
-      if (extras.isNotEmpty) span.addAttributes(OTel.attributes(extras));
+      if (extras.isNotEmpty) span.addAttributes(OTelAPI.attributes(extras));
     }
     return r.value;
   } catch (e, st) {
-    span.addAttributes(OTel.attributes([
-      OTel.attributeString(
-        ErrorResource.errorType.key,
+    span.addAttributes(OTelAPI.attributes([
+      OTelAPI.attributeString(
+        ErrorAttributes.errorType.key,
         e.runtimeType.toString(),
       ),
     ]));
